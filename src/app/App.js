@@ -17,7 +17,11 @@ const useStyles = makeStyles((theme) => ({
   },
   rightContent: {
     width: `calc(100% - ${drawerWidth}px)`,
+    height: '100vh',
   },
+  contentArea: {
+    height: 'calc(100% - 96px)'
+  }
 }));
 
 const App = ({ push }) => {
@@ -29,8 +33,9 @@ const App = ({ push }) => {
       <LeftMenu goToPath={goToPath}/>
       <div className={classes.rightContent}>
         <Header placeholder="Hi, Dear Test User"/>
-        <h4>Hi There!</h4>
-        {routes}
+        <div className={classes.contentArea}>
+          {routes}
+        </div>
       </div>
     </div>
   );
