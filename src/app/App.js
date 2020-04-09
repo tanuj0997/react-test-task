@@ -28,7 +28,7 @@ const App = ({ push }) => {
     <div className={classes.root}>
       <LeftMenu goToPath={goToPath}/>
       <div className={classes.rightContent}>
-        <Header />
+        <Header placeholder="Hi, Dear Test User"/>
         <h4>Hi There!</h4>
         {routes}
       </div>
