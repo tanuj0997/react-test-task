@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -6,8 +8,9 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-
-const tileData = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+import { cardClicked } from './reducer';
+import Loader from '../../components/Loader';
+import { getNumberArray } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,19 +40,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const IntegrationScreen = () => {
+const IntegrationScreen = ({ loading, cardClicked }) => {
   const classes = useStyles();
 
+  const [ elements, increaseElements ] = useState(getNumberArray(12))
+
+  const handleScroll = (event) => {
+    const target = event.target;
+
+    if(target.scrollHeight - target.scrollTop === target.clientHeight) {
+      const newLength = elements.length + 3;
+      const newArray = getNumberArray(newLength);
+      increaseElements(newArray);
+    }
+  }
+
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onScroll={handleScroll}>
+      <Loader loading={loading}/>
       <GridList cols={3}>
-        {tileData.map((tile) => (
-          <GridListTile key={tile} cols={1} classes={{ root: classes.gridListTile, tile: classes.gridListTile }}>
+        {elements.map((element) => (
+          <GridListTile key={element} cols={1} classes={{ root: classes.gridListTile, tile: classes.gridListTile }}>
             <Card className={classes.rootCard} variant="outlined">
-              <CardActionArea className={classes.actionArea}>
+              <CardActionArea className={classes.actionArea} onClick={() => cardClicked(element)}>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">
-                    {`API ${tile}`}
+                    {`API ${element}`}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -61,4 +77,15 @@ const IntegrationScreen = () => {
   );
 }
 
-export default IntegrationScreen;
+IntegrationScreen.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  cardClicked: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  loading: state.integration.loading,
+});
+
+const mapDispatchToProps = { cardClicked };
+
+export default connect(mapStateToProps, mapDispatchToProps)(IntegrationScreen);
