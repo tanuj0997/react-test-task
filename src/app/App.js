@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { push } from 'connected-react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import Header from '../components/Header'
 import LeftMenu from '../components/LeftMenu'
 import { routes } from '../routes';
-import { push } from 'connected-react-router';
 import { startSaga } from './rootSaga';
-import { connect } from 'react-redux';
+import Snackbars from '../components/SnackBars';
+import { setClose } from '../containers/Notifications/reducer';
 
 const drawerWidth = 240;
 
@@ -24,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const App = ({ push }) => {
+const App = ({ push, setClose, notifications }) => {
   const classes = useStyles();
   const goToPath = path => push(path);
 
@@ -32,6 +34,7 @@ const App = ({ push }) => {
     <div className={classes.root}>
       <LeftMenu goToPath={goToPath}/>
       <div className={classes.rightContent}>
+        <Snackbars { ...notifications} setClose={setClose} />
         <Header placeholder="Hi, Dear Test User"/>
         <div className={classes.contentArea}>
           {routes}
@@ -43,11 +46,20 @@ const App = ({ push }) => {
 
 App.propTypes = {
   push: PropTypes.func.isRequired,
+  setClose: PropTypes.func.isRequired,
+  notifications: PropTypes.object.isRequired,
 };
 
-const mapDispatchToProps = { push };
+const mapStateToProps = (state) => ({
+  notifications: state.notifications,
+});
 
-const WrappedComponent = connect(null, mapDispatchToProps)(App);
+const mapDispatchToProps = { 
+  push,  
+  setClose,
+};
+
+const WrappedComponent = connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default () => {
   startSaga();
